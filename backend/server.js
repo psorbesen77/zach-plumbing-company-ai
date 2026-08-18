@@ -5,7 +5,11 @@ const path = require("path");
 const app = express();
 const PORT = 3000;
 
-const dataFile = path.join(__dirname, "data", "dispatches.json"); // Path to the JSON file for storing dispatches
+//const dataFile = path.join(__dirname, "data", "dispatches.json"); // Path to the JSON file for storing dispatches
+
+const dataFile =
+  process.env.DISPATCH_DATA_FILE ||
+  path.join(__dirname, "data", "dispatches.json");
 
 // Safely read stored dispatches
 function readDispatches() {
@@ -105,6 +109,7 @@ if (existingDispatch) {
   res.status(201).json({
     success: true,
     message: "Dispatch created successfully",
+    dispatch: newDispatch,
   });
 });
 
@@ -182,7 +187,17 @@ app.patch("/api/dispatches/:id/status", (req, res) => {
 });
 
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+// Start the server Node.js server
+//app.listen(PORT, () => {
+ // console.log(`Server running at http://localhost:${PORT}`);
+//});
+
+
+// Export the app for testing or external usage Jest/Supertest
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
