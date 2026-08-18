@@ -100,6 +100,28 @@ app.get("/api/dispatches", (req, res) => {
   });
 });
 
+
+// Endpoint to retrieve a specific dispatch by ID GET
+app.get("/api/dispatches/:id", (req, res) => {
+  const { id } = req.params;
+
+  const dispatches = readDispatches();
+
+  const dispatch = dispatches.find((item) => item.id === id);
+
+  if (!dispatch) {
+    return res.status(404).json({
+      success: false,
+      message: "Dispatch not found",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    dispatch,
+  });
+});
+
 // Endpoint to update dispatch status PATCH
 app.patch("/api/dispatches/:id/status", (req, res) => {
   const { id } = req.params;
