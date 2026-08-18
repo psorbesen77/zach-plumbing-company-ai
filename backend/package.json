@@ -1,0 +1,12 @@
+{
+  "name": "zach-plumbing-company-ai-backend",
+  "version": "1.0.0",
+  "description": "Backend API for the Zach Plumbing Company AI dispatcher",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
