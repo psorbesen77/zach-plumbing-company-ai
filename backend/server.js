@@ -100,6 +100,48 @@ app.get("/api/dispatches", (req, res) => {
   });
 });
 
+// Endpoint to update dispatch status PATCH
+app.patch("/api/dispatches/:id/status", (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const allowedStatuses = ["NEW", "DISPATCHED", "COMPLETED"];
+
+  if (!allowedStatuses.includes(status)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid dispatch status",
+    });
+  }
+
+  const dispatches = readDispatches();
+
+  const dispatch = dispatches.find((item) => item.id === id);
+
+  if (!dispatch) {
+    return res.status(404).json({
+      success: false,
+      message: "Dispatch not found",
+    });
+  }
+
+  dispatch.status = status;
+  dispatch.updated_at = new Date().toISOString();
+
+  fs.writeFileSync(
+    dataFile,
+    JSON.stringify(dispatches, null, 2)
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Dispatch status updated successfully",
+    dispatch,
+  });
+});
+
+
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
