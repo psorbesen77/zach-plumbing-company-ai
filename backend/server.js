@@ -1,7 +1,28 @@
 const express = require("express");
+const fs = require("fs");
+const path = require("path");
 
 const app = express();
 const PORT = 3000;
+
+const dataFile = path.join(__dirname, "data", "dispatches.json"); // Path to the JSON file for storing dispatches
+
+// Safely read stored dispatches
+function readDispatches() {
+  try {
+    const data = fs.readFileSync(dataFile, "utf8");
+
+    if (!data.trim()) {
+      return [];
+    }
+
+    return JSON.parse(data);
+  } catch (error) {
+    console.error("Failed to read dispatch data:", error.message);
+    return [];
+  }
+}
+
 
 // Parse incoming JSON request bodies
 app.use(express.json());
@@ -14,7 +35,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// Dispatch endpoint
+// Dispatch endpoint POST
 app.post("/api/dispatch", (req, res) => {
   const { customer_name, phone_number, emergency_issue } = req.body.args || {};
 
@@ -36,6 +57,25 @@ app.post("/api/dispatch", (req, res) => {
     });
   }
 
+  // Read existing dispatches from the JSON file
+  const dispatches = readDispatches();
+
+  const newDispatch = {
+    id: `DISP-${Date.now()}`,
+    customer_name,
+    phone_number: normalizedPhone,
+    emergency_issue,
+    status: "NEW",
+    created_at: new Date().toISOString(),
+  };
+
+  dispatches.push(newDispatch);
+
+  fs.writeFileSync(
+    dataFile,
+    JSON.stringify(dispatches, null, 2)
+  );
+
   console.log("Emergency dispatch received:");
   console.log({
     customer_name,
@@ -43,9 +83,20 @@ app.post("/api/dispatch", (req, res) => {
     emergency_issue,
   });
 
+  res.status(201).json({
+    success: true,
+    message: "Dispatch created successfully",
+  });
+});
+
+// Endpoint to retrieve all dispatches GET
+app.get("/api/dispatches", (req, res) => {
+  const dispatches = readDispatches();
+
   res.status(200).json({
     success: true,
-    message: "Dispatch received successfully",
+    count: dispatches.length,
+    dispatches,
   });
 });
 
