@@ -15,5 +15,14 @@
     "emergency_issue": "Burst pipe in basement",
     "status": "NEW",
     "created_at": "2026-08-18T06:46:59.077Z"
+  },
+  {
+    "id": "DISP-1787068898035",
+    "retell_call_id": "test-call-001",
+    "customer_name": "Jane Doe",
+    "phone_number": "5055559876",
+    "emergency_issue": "Overflowing toilet",
+    "status": "NEW",
+    "created_at": "2026-08-18T16:01:38.036Z"
   }
 ]

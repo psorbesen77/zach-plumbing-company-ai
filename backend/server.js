@@ -38,8 +38,12 @@ app.get("/", (req, res) => {
 // Dispatch endpoint POST
 app.post("/api/dispatch", (req, res) => {
   const { customer_name, phone_number, emergency_issue } = req.body.args || {};
+  const callId = req.body.call?.call_id;
 
-  if (!customer_name || !phone_number || !emergency_issue) {
+
+
+  // Validate required data FIRST
+  if (!customer_name || !phone_number || !emergency_issue || !callId) {
     return res.status(400).json({
       success: false,
       message: "Missing required dispatch information",
@@ -60,8 +64,23 @@ app.post("/api/dispatch", (req, res) => {
   // Read existing dispatches from the JSON file
   const dispatches = readDispatches();
 
+  // Check if a dispatch with the same call ID already exists
+  const existingDispatch = dispatches.find(
+  (dispatch) => dispatch.retell_call_id === callId
+);
+
+if (existingDispatch) {
+  return res.status(200).json({
+    success: true,
+    message: "Dispatch already exists",
+    dispatch: existingDispatch,
+  });
+}
+
+
   const newDispatch = {
     id: `DISP-${Date.now()}`,
+    retell_call_id: callId,
     customer_name,
     phone_number: normalizedPhone,
     emergency_issue,
