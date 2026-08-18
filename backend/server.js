@@ -16,7 +16,14 @@ app.get("/", (req, res) => {
 
 // Dispatch endpoint
 app.post("/api/dispatch", (req, res) => {
-  const { customer_name, phone_number, emergency_issue } = req.body.args;
+  const { customer_name, phone_number, emergency_issue } = req.body.args || {};
+
+  if (!customer_name || !phone_number || !emergency_issue) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing required dispatch information",
+    });
+  }
 
   console.log("Emergency dispatch received:");
   console.log({
