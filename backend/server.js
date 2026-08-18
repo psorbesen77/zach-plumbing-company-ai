@@ -25,10 +25,21 @@ app.post("/api/dispatch", (req, res) => {
     });
   }
 
+  // Turn the phone number into a normalized format (digits only)
+  const normalizedPhone = phone_number.replace(/\D/g, "");
+
+  // Validate the phone number length (assuming US phone numbers)
+  if (normalizedPhone.length !== 10) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid phone number",
+    });
+  }
+
   console.log("Emergency dispatch received:");
   console.log({
     customer_name,
-    phone_number,
+    phone_number: normalizedPhone,
     emergency_issue,
   });
 
