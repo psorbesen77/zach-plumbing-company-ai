@@ -16,8 +16,14 @@ app.get("/", (req, res) => {
 
 // Dispatch endpoint
 app.post("/api/dispatch", (req, res) => {
-  console.log("Dispatch received:");
-  console.log(req.body);
+  const { customer_name, phone_number, emergency_issue } = req.body.args;
+
+  console.log("Emergency dispatch received:");
+  console.log({
+    customer_name,
+    phone_number,
+    emergency_issue,
+  });
 
   res.status(200).json({
     success: true,
