@@ -5,6 +5,27 @@ function App() {
   const [dispatches, setDispatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+
+  const filteredDispatches =
+  statusFilter === "ALL"
+    ? dispatches
+    : dispatches.filter(
+        (dispatch) => dispatch.status === statusFilter
+      );
+
+  // Calculate counts for each status
+  const newCount = dispatches.filter(
+      (dispatch) => dispatch.status === "NEW"
+    ).length;
+
+  const dispatchedCount = dispatches.filter(
+      (dispatch) => dispatch.status === "DISPATCHED"
+    ).length;
+
+  const completedCount = dispatches.filter(
+      (dispatch) => dispatch.status === "COMPLETED"
+    ).length;
 
   // Function to fetch dispatches from the backend
   const fetchDispatches = async () => {
@@ -79,6 +100,37 @@ function App() {
           </button>
         </section>
 
+        {/* Summary cards for each status */}
+
+        <section className="summary-grid">
+          <div className="summary-card">
+            <span>New</span>
+            <strong>{newCount}</strong>
+          </div>
+
+          <div className="summary-card">
+            <span>Dispatched</span>
+            <strong>{dispatchedCount}</strong>
+          </div>
+
+          <div className="summary-card">
+            <span>Completed</span>
+            <strong>{completedCount}</strong>
+          </div>
+        </section>
+
+        <section className="filter-bar">
+          {["ALL", "NEW", "DISPATCHED", "COMPLETED"].map((status) => (
+            <button
+              key={status}
+              className={statusFilter === status ? "active" : ""}
+              onClick={() => setStatusFilter(status)}
+            >
+              {status}
+            </button>
+          ))}
+        </section>
+
         <section className="dispatch-panel">
           {loading && <p>Loading dispatches...</p>}
 
@@ -88,14 +140,32 @@ function App() {
             <p>No dispatches found.</p>
           )}
 
+          {!loading &&
+            !error &&
+            dispatches.length > 0 &&
+            filteredDispatches.length === 0 && (
+              <p>No dispatches match this filter.</p>
+            )}
+
           {!loading && !error && dispatches.length > 0 && (
             <div className="dispatch-list">
-              {dispatches.map((dispatch) => (
+              {filteredDispatches.map((dispatch) => (
                 <article className="dispatch-card" key={dispatch.id}>
                   <div className="dispatch-card-header">
                     <div>
                       <h3>{dispatch.customer_name}</h3>
                       <span>{dispatch.id}</span>
+
+                      {/* Format the created_at timestamp to a more readable format */}
+                      <p className="dispatch-time">
+                        {new Date(dispatch.created_at).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
+                      </p>
                     </div>
 
                     <span
