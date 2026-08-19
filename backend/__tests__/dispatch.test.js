@@ -1,12 +1,4 @@
-//const request = require("supertest");
-//const app = require("../server");
-
-const fs = require("fs");
-const path = require("path");
-
-const testDataFile = path.join(__dirname, "test-dispatches.json");
-
-process.env.DISPATCH_DATA_FILE = testDataFile;
+const pool = require("../db");
 
 const request = require("supertest");
 const app = require("../server");
@@ -15,15 +7,13 @@ const app = require("../server");
 // Test suite for the Dispatch API GET
 describe("Dispatch API", () => {
     // Clear the test data file before each test
-    beforeEach(() => {
-    fs.writeFileSync(testDataFile, "[]");
-  });
+    beforeEach(async () => {
+        await pool.query("DELETE FROM dispatches");
+    });
 
-  afterAll(() => {
-    if (fs.existsSync(testDataFile)) {
-      fs.unlinkSync(testDataFile);
-    }
-  });
+    afterAll(async () => {
+        await pool.end();
+    });
 
 
   test("GET / should return backend health status", async () => {
