@@ -95,9 +95,10 @@ function App() {
             <p>Manage incoming plumbing service calls.</p>
           </div>
 
-          <button onClick={fetchDispatches}>
-            Refresh Dispatches
+          <button onClick={fetchDispatches} disabled={loading}>
+            {loading ? "Refreshing..." : "Refresh Dispatches"}
           </button>
+
         </section>
 
         {/* Summary cards for each status */}
@@ -132,9 +133,23 @@ function App() {
         </section>
 
         <section className="dispatch-panel">
-          {loading && <p>Loading dispatches...</p>}
+          {loading && (
+            <div className="state-message">
+              <div className="spinner"></div>
+              <p>Loading dispatches...</p>
+            </div>
+          )}
 
-          {error && <p>{error}</p>}
+          {!loading && error && (
+            <div className="state-message error-state">
+              <strong>Unable to load dispatches</strong>
+              <p>{error}</p>
+
+              <button onClick={fetchDispatches}>
+                Try Again
+              </button>
+            </div>
+          )}
 
           {!loading && !error && dispatches.length === 0 && (
             <p>No dispatches found.</p>
