@@ -6,6 +6,10 @@ An AI-powered plumbing dispatch system built with Retell AI, Node.js, Express, M
 
 The project handles inbound calls, identifies emergency plumbing issues, collects customer information, sends dispatch data to a backend API, stores it in MySQL, and displays it in a React dashboard.
 
+## Dispatch Dashboard
+
+![Zach Plumbing AI Dispatch Dashboard](docs/final-dashboard-demo.png)
+
 ## How It Works
 
 ```text
